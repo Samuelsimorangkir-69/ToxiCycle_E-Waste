@@ -1,0 +1,31 @@
+import { Link } from "@tanstack/react-router";
+import type { ReactNode } from "react";
+
+const NAV_ITEMS = [
+  { to: "/", icon: "dashboard", label: "Dashboard" },
+  { to: "/kompartemen", icon: "inventory_2", label: "Detail Kompartemen" },
+  { to: "/perangkat", icon: "tune", label: "Device Management" },
+  { to: "/mitra", icon: "local_shipping", label: "Mitra & Logistik" },
+  { to: "/login", icon: "manage_accounts", label: "Login / Akun" },
+] as const;
+
+export function AppShell({ children }: { children: ReactNode }) {
+  return (
+    <div className="bg-surface font-body-md text-on-surface antialiased">
+      <aside className="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between"><div className="flex flex-col"><div className="h-16 px-space-lg flex items-center gap-space-sm bg-surface-container-lowest"><img alt="ToxiCycle" className="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VCW2gn6dM96XYRgSeXVKkwk-IY2nQlT9HLSdYgohQfvS1nicGJVT7lgLMXw3ppSFJX1H7YnFBbVyoK0jQMemyEVoJVPCEhTt_qSEn08jxFhlKUimQPkpUYqtfQfIL-eyER2WycSOE3YvsJxKnpQT03o8--m9yRjlH1bYvkijF9EJRFvoWuhys-EqR9i7PY0shmyJUrVXtMRRLEdd8pD8dN-4OP1mQATt3Ddas49twgMje73yFAh3RQYgI" /><div className="flex flex-col"><span className="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">ToxiCycle</span><span className="font-label-sm text-label-sm text-secondary uppercase font-bold tracking-wider mt-space-xs">IoT Drop-Box Admin</span></div></div><div className="px-space-md pt-space-md"><label className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block mb-space-xs px-space-xs">Active Unit</label><div className="relative flex items-center bg-surface-container-low rounded-lg p-space-xs"><span className="material-symbols-outlined text-secondary ml-space-xs">sensors</span><select className="w-full bg-transparent font-label-md text-label-md text-on-surface focus:outline-none py-space-xs px-space-xs cursor-pointer"><option value="box-01">TX-JKT-Central-01 (Active)</option><option value="box-02">TX-JKT-South-04 (Active)</option><option value="box-03">TX-BDG-North-02 (Maintenance)</option><option value="box-04">TX-SBY-Hub-07 (Active)</option></select></div></div><nav className="flex flex-col gap-space-xs px-space-md mt-space-lg">
+            {NAV_ITEMS.map((n) => (
+              <Link key={n.to} to={n.to} className="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-body-md transition-all" activeOptions={{ exact: true }} activeProps={{ className: "bg-primary-container text-on-primary font-label-lg" }} inactiveProps={{ className: "font-body-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface" }}>
+                <span className="material-symbols-outlined text-xl">{n.icon}</span>
+                <span>{n.label}</span>
+              </Link>
+            ))}
+          </nav></div><div className="p-space-md bg-surface-container-low m-space-md rounded-xl"><div className="flex items-center justify-between mb-space-xs"><span className="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold">Gateway Ping</span><span className="font-label-sm text-label-sm text-primary font-bold">18ms</span></div><div className="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden"><div className="bg-primary-container h-full rounded-full w-4/5"></div></div><div className="flex items-center justify-between mt-space-sm"><span className="font-body-sm text-body-sm text-on-surface-variant">FW: v2.4.1-rc3</span><span className="material-symbols-outlined text-sm text-primary">verified</span></div></div></aside>
+      <div className="pl-72">
+        <header className="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div className="flex items-center gap-space-md"><div className="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-fixed/40"><span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span><span className="font-label-sm text-label-sm text-on-primary-fixed font-bold tracking-wide">ONLINE</span></div><div className="hidden md:flex items-center gap-space-xs font-label-md text-label-md text-on-surface-variant bg-surface-container-low px-space-sm py-1 rounded-md"><span className="material-symbols-outlined text-sm text-secondary">network_ping</span><span className="">Latency: 24ms</span></div><div className="hidden lg:flex items-center gap-space-xs font-label-md text-label-md text-on-surface-variant bg-surface-container-low px-space-sm py-1 rounded-md"><span className="material-symbols-outlined text-sm text-tertiary-container">bolt</span><span className="">Solar Batt: 94%</span></div></div><div className="flex items-center gap-space-md"><button aria-label="Notifications" className="relative p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" type="button"><span className="material-symbols-outlined text-xl">notifications</span><span className="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full ring-2 ring-surface-container-lowest"></span></button><div className="flex items-center gap-space-sm pl-space-sm"><img alt="Profile" className="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1Wm92SmmmoipW9bNyJUG6yYFBxbTfyNGQqtZeL4kmYdZ7PyjFUUWFSxNjipG0DX3WgGpyE_QTG4thW7thY33Irao7TDATCySCmAuDiWsV4Kdh_YeQePNyM63pXPXwg78gwpjtwoTXR_qt2jMf2eBS-PWffOm5thglRUiUV5RVOBUIuyfYb3OPsrAIQHBZA-qCIJagefMI5kCgyMTjIkxnIKb7k-_7pSkIaXfi5uJUe3z2QYQTz4xDC9a4A" /><div className="hidden sm:flex flex-col text-left"><span className="font-label-md text-label-md text-on-surface leading-tight">Arya Pratama</span><span className="font-label-sm text-label-sm text-on-surface-variant leading-tight">Lead Hardware Ops</span></div></div></div></header>
+        <main className="relative pt-16 w-full min-h-screen bg-surface px-space-lg py-space-lg">
+          <div className="flex flex-col w-full">{children}</div>
+        </main>
+      </div>
+    </div>
+  );
+}
