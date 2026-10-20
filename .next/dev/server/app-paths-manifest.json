@@ -1,7 +1,0 @@
-{
-  "/admin/hardware/page": "app/admin/hardware/page.js",
-  "/admin/kompartemen/page": "app/admin/kompartemen/page.js",
-  "/admin/mitra/page": "app/admin/mitra/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/login/page": "app/login/page.js"
-}

@@ -31,3 +31,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.claude
+.agents
+.next
+.skills-lock.json
