@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":["file:///Applications/XAMPP/xamppfiles/htdocs/ToxiCycle_E-Waste/components/PwaRegister.jsx"],"sourcesContent":["'use client'\n\nimport { useEffect } from 'react'\n\nexport default function PwaRegister() {\n  useEffect(() => {\n    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {\n      navigator.serviceWorker\n        .register('/sw.js')\n        .catch(() => {\n          // Handled gracefully in offline or restricted environments\n        })\n    }\n  }, [])\n\n  return null\n}\n\n"],"names":["PwaRegister"],"mappings":";;;;AAEA;AAFA;;AAIe,SAASA;IACtB,IAAA,kNAAS,EAAC;QACR;;IAOF,GAAG,EAAE;IAEL,OAAO;AACT"}}]
+}

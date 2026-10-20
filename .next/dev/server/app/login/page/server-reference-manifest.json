@@ -1,0 +1,15 @@
+{
+  "node": {
+    "60bc3dc96b248a72a96894786cfb74e021127cd5cc": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": "[project]/.next-internal/server/app/login/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/admin/actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "exportedName": "loginAdmin",
+      "filename": "app/admin/actions.js"
+    }
+  },
+  "edge": {}
+}

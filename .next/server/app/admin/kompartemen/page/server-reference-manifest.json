@@ -1,0 +1,15 @@
+{
+  "node": {
+    "000b56dd307eafa31592fcc9d708843ecefafef388": {
+      "workers": {
+        "app/admin/kompartemen/page": {
+          "moduleId": 40131,
+          "async": false
+        }
+      },
+      "exportedName": "logoutAdmin",
+      "filename": "app/admin/actions.js"
+    }
+  },
+  "edge": {}
+}
