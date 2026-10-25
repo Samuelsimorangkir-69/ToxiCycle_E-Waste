@@ -61,16 +61,19 @@ export async function loginAdmin(prevState, formData) {
       }
     }
   } else {
-    // 2. Safe development fallback when Supabase keys are pending configuration
-    // Default admin credential or valid admin password length >= 6
-    if (password.length < 6) {
+    // 2. Local admin account when Supabase keys are pending configuration
+    const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase()
+    const adminPassword = process.env.ADMIN_PASSWORD
+    const emailMatch = Boolean(adminEmail) && email.toLowerCase() === adminEmail
+    const passwordMatch = Boolean(adminPassword) && password === adminPassword
+
+    if (!emailMatch || !passwordMatch) {
       return {
         success: false,
-        error: 'Kata sandi minimal 6 karakter. Silakan periksa kembali input Anda.',
+        error: 'Kredensial tidak sesuai. Pastikan alamat email dan kata sandi admin telah terdaftar dan dimasukkan dengan benar.',
       }
     }
 
-    // Set secure HTTP-only session cookie
     cookieStore.set('toxiccycle_admin_session', email, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
