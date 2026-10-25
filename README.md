@@ -1,4 +1,4 @@
-# ♻️ ToxiCycle-IoT: Stasiun Pemilahan E-Waste Otomatis Berbasis Computer Vision & IoT
+# ♻️ ToxiCyle-IoT: Sistem Smart Drop-Box E-Waste Berbasis IoT dan AI untuk Penilaian Persentase Toksistas serta Rekomendasi Upcyling Otomatis
 
 ## 📌 Tentang Proyek
 **ToxiCycle-IoT** adalah sistem stasiun tempat sampah pintar (*smart drop-box*) yang dirancang untuk mengotomatisasi pemilahan sampah elektronik (*e-waste*) secara real-time. Proyek ini dikembangkan oleh tim **PBLIF3-PC04** Jurusan Teknik Informatika Polibatam sebagai solusi mutakhir untuk meminimalkan risiko penanganan limbah berbahaya dan meningkatkan efisiensi operasional pengelolaan sampah.
