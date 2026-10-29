@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Radio, Scale, ShieldCheck, AlertTriangle, TrendingUp, Layers, CheckCircle2 } from 'lucide-react'
+import { getCapacityColor } from '../../capacity-color'
 
 const chambersData = [
   {
@@ -192,6 +193,7 @@ export default function KompartemenDetailPage() {
 
   const activeChamber =
     chambersData.find((c) => c.id === selectedId) || chambersData[0]
+  const capacityColor = getCapacityColor(activeChamber.capacityPercent)
 
   // Circle SVG Math (Radius: 88, Circumference: 2 * PI * 88 = 552.92)
   const circleRadius = 88
@@ -282,7 +284,7 @@ export default function KompartemenDetailPage() {
               cx="100"
               cy="100"
               r={circleRadius}
-              stroke={activeChamber.accentColor}
+              stroke={capacityColor}
               strokeDasharray={circumference}
               strokeDashoffset={strokeOffset}
             />
@@ -290,7 +292,7 @@ export default function KompartemenDetailPage() {
 
           {/* Centered Numbers */}
           <div className="gauge-center-content">
-            <span className="gauge-big-num font-bold text-[32px]">
+            <span className="gauge-big-num font-bold text-[32px]" style={{ color: capacityColor }}>
               {activeChamber.capacityPercent}%
             </span>
             <span className="gauge-sub-label font-medium text-[13px]">Volumetrik</span>
@@ -314,13 +316,13 @@ export default function KompartemenDetailPage() {
           {activeChamber.statusTone === 'warning' ? (
             <AlertTriangle
               size={16}
-              style={{ color: activeChamber.accentColor }}
+              style={{ color: capacityColor }}
               aria-hidden="true"
             />
           ) : (
             <ShieldCheck
               size={16}
-              style={{ color: activeChamber.accentColor }}
+              style={{ color: capacityColor }}
               aria-hidden="true"
             />
           )}
@@ -476,8 +478,8 @@ export default function KompartemenDetailPage() {
             <defs>
               {/* Gradient for area under curve */}
               <linearGradient id={`trend-grad-${activeChamber.id}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={activeChamber.accentColor} stopOpacity="0.32" />
-                <stop offset="100%" stopColor={activeChamber.accentColor} stopOpacity="0.02" />
+                <stop offset="0%" stopColor={capacityColor} stopOpacity="0.32" />
+                <stop offset="100%" stopColor={capacityColor} stopOpacity="0.02" />
               </linearGradient>
             </defs>
 
@@ -507,7 +509,7 @@ export default function KompartemenDetailPage() {
             {/* Main Stroke Line */}
             <path
               d={linePath}
-              stroke={activeChamber.accentColor}
+              stroke={capacityColor}
               className="trend-line-path"
             />
 
@@ -515,6 +517,7 @@ export default function KompartemenDetailPage() {
             {trendPoints.map((pt, idx) => {
               const isHovered = hoveredIndex === idx
               const isToday = idx === trendPoints.length - 1
+              const pointColor = getCapacityColor(pt.percent)
 
               return (
                 <g key={pt.date}>
@@ -525,7 +528,7 @@ export default function KompartemenDetailPage() {
                       y1="25"
                       x2={pt.x}
                       y2="165"
-                      stroke={activeChamber.accentColor}
+                      stroke={pointColor}
                       strokeWidth="1.5"
                       strokeDasharray="2 2"
                       opacity="0.75"
@@ -537,7 +540,7 @@ export default function KompartemenDetailPage() {
                     cx={pt.x}
                     cy={pt.y}
                     r={isHovered ? 8 : isToday ? 6 : 4}
-                    fill={activeChamber.accentColor}
+                    fill={pointColor}
                     opacity={isHovered ? 0.35 : isToday ? 0.25 : 0}
                   />
 
@@ -546,7 +549,7 @@ export default function KompartemenDetailPage() {
                     cx={pt.x}
                     cy={pt.y}
                     r={isHovered ? 5.5 : isToday ? 4.5 : 3.5}
-                    fill={activeChamber.accentColor}
+                    fill={pointColor}
                     stroke="var(--color-surface)"
                     strokeWidth="2"
                     className="trend-data-point"
@@ -559,7 +562,7 @@ export default function KompartemenDetailPage() {
                     x={pt.x}
                     y={pt.y - 10}
                     textAnchor="middle"
-                    fill={isToday ? activeChamber.accentColor : 'var(--color-text-primary)'}
+                    fill={pointColor}
                     fontSize={isHovered || isToday ? '12px' : '11px'}
                     fontWeight={isHovered || isToday ? '700' : '600'}
                   >
@@ -588,6 +591,7 @@ export default function KompartemenDetailPage() {
           {activeChamber.weeklyTrend.map((item, idx) => {
             const isToday = idx === activeChamber.weeklyTrend.length - 1
             const isHovered = hoveredIndex === idx
+            const pointColor = getCapacityColor(item.percent)
 
             return (
               <div
@@ -604,8 +608,10 @@ export default function KompartemenDetailPage() {
                 }`}
                 style={
                   isHovered
-                    ? { borderColor: activeChamber.accentColor, backgroundColor: 'var(--color-surface-hover)' }
-                    : undefined
+                    ? { borderColor: pointColor, backgroundColor: 'var(--color-surface-hover)' }
+                    : isToday
+                      ? { borderColor: pointColor }
+                      : undefined
                 }
               >
                 <div className="trend-day-date">
@@ -613,7 +619,7 @@ export default function KompartemenDetailPage() {
                 </div>
                 <div
                   className="trend-day-val"
-                  style={isToday ? { color: activeChamber.accentColor } : undefined}
+                  style={{ color: pointColor }}
                 >
                   {item.percent}%
                 </div>

@@ -72,7 +72,7 @@ export default function Sidebar() {
                 <circle cx="12" cy="12" r="2.5" />
               </svg>
             </div>
-            <span className="brand-title font-bold text-[32px]">ToxicCycle</span>
+            <span className="brand-title font-bold">ToxicCycle</span>
           </Link>
           <ThemeToggle />
         </div>

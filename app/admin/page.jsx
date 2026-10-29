@@ -3,12 +3,15 @@
 import { useState, useTransition } from 'react'
 import { RotateCw, Download, Layers, Scale, Banknote, AlertTriangle } from 'lucide-react'
 import MetricCard from '../../components/MetricCard'
+import { getCapacityColor } from '../capacity-color'
 import { refreshTelemetry, exportTelemetryCSV } from './actions'
 
 export default function AdminDashboardPage() {
   const [isPending, startTransition] = useTransition()
   const [isExporting, setIsExporting] = useState(false)
   const [lastUpdated, setLastUpdated] = useState('Baru saja')
+  const overallCapacityPercent = 74
+  const overallCapacityColor = getCapacityColor(overallCapacityPercent)
 
   // Handle Refresh Sensor action
   const handleRefresh = () => {
@@ -67,11 +70,11 @@ export default function AdminDashboardPage() {
 
   // Chamber Capacity Breakdown (5 Kompartemen)
   const chamberCapacity = [
-    { name: 'Kompartemen 1 — Baterai + Power Bank', percent: 68, color: 'oklch(0.72 0.18 152)' },
-    { name: 'Kompartemen 2 — Keyboard + Mouse', percent: 45, color: 'oklch(0.68 0.14 165)' },
-    { name: 'Kompartemen 3 — Kabel', percent: 54, color: 'oklch(0.70 0.16 160)' },
-    { name: 'Kompartemen 4 — Charger', percent: 38, color: 'oklch(0.74 0.15 145)' },
-    { name: 'Kompartemen 5 — PCB', percent: 82, color: 'oklch(0.75 0.18 80)' },
+    { name: 'Kompartemen 1 — Baterai + Power Bank', percent: 68 },
+    { name: 'Kompartemen 2 — Keyboard + Mouse', percent: 45 },
+    { name: 'Kompartemen 3 — Kabel', percent: 54 },
+    { name: 'Kompartemen 4 — Charger', percent: 38 },
+    { name: 'Kompartemen 5 — PCB', percent: 82 },
   ]
 
   // Recent AI & Sensor Detection Log
@@ -163,16 +166,18 @@ export default function AdminDashboardPage() {
                   cy="60"
                   r="50"
                   fill="none"
-                  stroke="var(--color-primary)"
+                  stroke={overallCapacityColor}
                   strokeWidth="9"
                   strokeLinecap="round"
                   strokeDasharray="314.16"
-                  strokeDashoffset={314.16 * (1 - 0.74)}
+                  strokeDashoffset={314.16 * (1 - overallCapacityPercent / 100)}
                   transform="rotate(-90 60 60)"
                 />
               </svg>
               <div className="capacity-circle-text">
-                <span className="capacity-percent font-bold text-[32px]">74%</span>
+                <span className="capacity-percent font-bold text-[32px]" style={{ color: overallCapacityColor }}>
+                  {overallCapacityPercent}%
+                </span>
                 <span className="capacity-caption font-medium text-[13px]">Terisi</span>
               </div>
             </div>
@@ -188,7 +193,12 @@ export default function AdminDashboardPage() {
           {/* Highlight Callout: Kompartemen Paling Penuh */}
           <div className="highest-chamber-callout">
             <div className="highest-callout-left">
-              <AlertTriangle size={20} className="highest-callout-icon" aria-hidden="true" />
+              <AlertTriangle
+                size={20}
+                className="highest-callout-icon"
+                style={{ color: getCapacityColor(82) }}
+                aria-hidden="true"
+              />
               <div>
                 <div className="highest-callout-title">
                   Paling Banyak Terisi: Kompartemen 5 (PCB)
@@ -198,7 +208,10 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </div>
-            <span className="highest-callout-badge">
+            <span
+              className="highest-callout-badge"
+              style={{ backgroundColor: getCapacityColor(82), color: '#fff' }}
+            >
               82% Tertinggi
             </span>
           </div>
@@ -230,17 +243,20 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Vertical Bars */}
-              {chamberCapacity.map((c, idx) => {
+              {chamberCapacity.map((c) => {
+                const capacityColor = getCapacityColor(c.percent)
                 const isMax = c.percent === 82 // Kompartemen 5 PCB
                 return (
                   <div key={c.name} className={`barchart-col ${isMax ? 'is-max' : ''}`}>
-                    <span className="barchart-val-tag">{c.percent}%</span>
-                    <div className="barchart-track">
+                    <span className="barchart-val-tag" style={{ color: capacityColor }}>
+                      {c.percent}%
+                    </span>
+                    <div className="barchart-track" style={{ borderColor: capacityColor }}>
                       <div
                         className="barchart-fill"
                         style={{
                           height: `${c.percent}%`,
-                          backgroundColor: isMax ? 'var(--color-accent)' : 'var(--color-primary)',
+                          backgroundColor: capacityColor,
                         }}
                       />
                     </div>
@@ -252,12 +268,15 @@ export default function AdminDashboardPage() {
             {/* X-Axis Labels */}
             <div className="barchart-label-row">
               {chamberCapacity.map((c, idx) => {
+                const capacityColor = getCapacityColor(c.percent)
                 const isMax = c.percent === 82
                 const shortNames = ['Baterai', 'Keyboard', 'Kabel', 'Charger', 'PCB']
                 return (
                   <div key={c.name} className={`barchart-label-item ${isMax ? 'is-max' : ''}`}>
-                    <span className="barchart-col-title">Komp {idx + 1}</span>
-                    <span className="barchart-col-sub">{shortNames[idx]}</span>
+                    <span className="barchart-col-title" style={{ color: capacityColor }}>
+                      {shortNames[idx]}
+                    </span>
+                    <span className="barchart-col-sub">Komp {idx + 1}</span>
                   </div>
                 )
               })}
@@ -270,14 +289,16 @@ export default function AdminDashboardPage() {
               <div key={chamber.name} className="chamber-bar-item">
                 <div className="chamber-bar-labels font-medium text-[14px]">
                   <span className="chamber-name">{chamber.name}</span>
-                  <span className="chamber-val">{chamber.percent}%</span>
+                  <span className="chamber-val" style={{ color: getCapacityColor(chamber.percent) }}>
+                    {chamber.percent}%
+                  </span>
                 </div>
                 <div className="chamber-progress-track">
                   <div
                     className="chamber-progress-fill"
                     style={{
                       width: `${chamber.percent}%`,
-                      backgroundColor: chamber.percent === 82 ? 'var(--color-accent)' : chamber.color,
+                      backgroundColor: getCapacityColor(chamber.percent),
                     }}
                   />
                 </div>
