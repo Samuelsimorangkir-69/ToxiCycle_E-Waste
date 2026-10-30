@@ -1,13 +1,21 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { User, Phone, Mail, MessageCircle, ExternalLink, Plus, X } from 'lucide-react'
+import { User, Phone, Mail, MessageCircle, ExternalLink, Plus, X, Check } from 'lucide-react'
+
+export const KOMPARTEMEN_CATEGORIES = [
+  { id: 'komp-1', name: 'Kompartemen 1 — Baterai + Power Bank', code: 'Komp 1' },
+  { id: 'komp-2', name: 'Kompartemen 2 — Keyboard + Mouse', code: 'Komp 2' },
+  { id: 'komp-3', name: 'Kompartemen 3 — Kabel', code: 'Komp 3' },
+  { id: 'komp-4', name: 'Kompartemen 4 — Charger', code: 'Komp 4' },
+  { id: 'komp-5', name: 'Kompartemen 5 — PCB', code: 'Komp 5' },
+]
 
 const initialVendors = [
   {
     id: 1,
     name: 'PT Tekno Resik',
-    badge: 'Sirkuit & PCB',
+    badges: ['Kompartemen 5 — PCB'],
     pic: 'Budi Santoso',
     phone: '+62 812-3456-7891',
     phoneClean: '6281234567891',
@@ -16,7 +24,7 @@ const initialVendors = [
   {
     id: 2,
     name: 'PT Eco Baterai',
-    badge: 'Baterai Lithium',
+    badges: ['Kompartemen 1 — Baterai + Power Bank'],
     pic: 'Siti Rahmawati',
     phone: '+62 812-3456-7892',
     phoneClean: '6281234567892',
@@ -25,7 +33,7 @@ const initialVendors = [
   {
     id: 3,
     name: 'PT Revo Sirkular',
-    badge: 'Sirkuit Terpadu',
+    badges: ['Kompartemen 2 — Keyboard + Mouse', 'Kompartemen 5 — PCB'],
     pic: 'Hendra Wijaya',
     phone: '+62 812-3456-7893',
     phoneClean: '6281234567893',
@@ -34,7 +42,7 @@ const initialVendors = [
   {
     id: 4,
     name: 'CV Daur Logam Mulia',
-    badge: 'Kabel & Logam',
+    badges: ['Kompartemen 3 — Kabel', 'Kompartemen 4 — Charger'],
     pic: 'Agus Pratama',
     phone: '+62 812-3456-7894',
     phoneClean: '6281234567894',
@@ -43,7 +51,7 @@ const initialVendors = [
   {
     id: 5,
     name: 'PT Surya E-Waste',
-    badge: 'Layar & Modul',
+    badges: ['Kompartemen 4 — Charger', 'Kompartemen 5 — PCB'],
     pic: 'Dewi Anggraini',
     phone: '+62 812-3456-7895',
     phoneClean: '6281234567895',
@@ -52,7 +60,11 @@ const initialVendors = [
   {
     id: 6,
     name: 'PT Hijau Sirkular',
-    badge: 'Daur Ulang Umum',
+    badges: [
+      'Kompartemen 1 — Baterai + Power Bank',
+      'Kompartemen 2 — Keyboard + Mouse',
+      'Kompartemen 3 — Kabel',
+    ],
     pic: 'Farhan Ramadhan',
     phone: '+62 812-3456-7896',
     phoneClean: '6281234567896',
@@ -60,12 +72,25 @@ const initialVendors = [
   },
 ]
 
+const getVendorBadges = (vendor) => {
+  if (Array.isArray(vendor.badges) && vendor.badges.length > 0) {
+    return vendor.badges
+  }
+  if (vendor.badge) {
+    if (vendor.badge.includes(',')) {
+      return vendor.badge.split(',').map((b) => b.trim())
+    }
+    return [vendor.badge]
+  }
+  return ['Kompartemen 1 — Baterai + Power Bank']
+}
+
 export default function MitraPage() {
   const [vendors, setVendors] = useState(initialVendors)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
-    badge: 'Sirkuit & PCB',
+    badges: ['Kompartemen 1 — Baterai + Power Bank'],
     pic: '',
     phone: '',
     email: '',
@@ -100,6 +125,9 @@ export default function MitraPage() {
   }, [isModalOpen])
 
   const generateWhatsAppLink = (vendor) => {
+    const badges = getVendorBadges(vendor)
+    const badgesText = badges.map((b) => `- ${b}`).join('\n')
+
     const message = `Halo ${vendor.pic}, saya Admin ToxicCycle.
 
 Berikut pembaruan status kapasitas IoT Smart Drop-Box saat ini:
@@ -109,6 +137,9 @@ Berikut pembaruan status kapasitas IoT Smart Drop-Box saat ini:
 - Kompartemen 4 (Charger): 38% (44,2 kg)
 - Kompartemen 5 (PCB): 82% (142,5 kg)
 Total Akumulasi: 491,2 kg.
+
+Kategori Spesialisasi Penjemputan (${vendor.name}):
+${badgesText}
 
 Mohon konfirmasi jadwal penjemputan daur ulang dari pihak ${vendor.name}. Terima kasih.`
 
@@ -120,11 +151,29 @@ Mohon konfirmasi jadwal penjemputan daur ulang dari pihak ${vendor.name}. Terima
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  const toggleCategory = (categoryName) => {
+    setFormData((prev) => {
+      const exists = prev.badges.includes(categoryName)
+      let updated
+      if (exists) {
+        updated = prev.badges.filter((b) => b !== categoryName)
+      } else {
+        updated = [...prev.badges, categoryName]
+      }
+      return { ...prev, badges: updated }
+    })
+  }
+
   const handleAddVendor = (e) => {
     e.preventDefault()
 
     if (!formData.name.trim() || !formData.pic.trim() || !formData.phone.trim() || !formData.email.trim()) {
       setErrorMsg('Mohon lengkapi seluruh formulir mitra sebelum menyimpan.')
+      return
+    }
+
+    if (!formData.badges || formData.badges.length === 0) {
+      setErrorMsg('Pilih minimal satu kategori spesialisasi kompartemen untuk mitra ini.')
       return
     }
 
@@ -139,7 +188,8 @@ Mohon konfirmasi jadwal penjemputan daur ulang dari pihak ${vendor.name}. Terima
     const newVendor = {
       id: Date.now(),
       name: formData.name.trim(),
-      badge: formData.badge,
+      badges: formData.badges,
+      badge: formData.badges.join(', '),
       pic: formData.pic.trim(),
       phone: formData.phone.trim(),
       phoneClean: cleanDigits,
@@ -160,7 +210,7 @@ Mohon konfirmasi jadwal penjemputan daur ulang dari pihak ${vendor.name}. Terima
     // Reset & close
     setFormData({
       name: '',
-      badge: 'Sirkuit & PCB',
+      badges: ['Kompartemen 1 — Baterai + Power Bank'],
       pic: '',
       phone: '',
       email: '',
@@ -196,13 +246,20 @@ Mohon konfirmasi jadwal penjemputan daur ulang dari pihak ${vendor.name}. Terima
       <section className="mitra-grid gap-6" aria-label="Daftar Vendor Mitra">
         {vendors.map((vendor) => {
           const waLink = generateWhatsAppLink(vendor)
+          const vendorBadges = getVendorBadges(vendor)
 
           return (
             <article key={vendor.id} className="mitra-card rounded-xl">
               <div className="mitra-top">
                 <div className="mitra-title-row">
                   <h2 className="mitra-name font-semibold text-[18px]">{vendor.name}</h2>
-                  <span className="mitra-badge font-medium text-[13px] rounded-xl">{vendor.badge}</span>
+                  <div className="mitra-badges-wrap" aria-label={`Kategori spesialisasi: ${vendorBadges.join(', ')}`}>
+                    {vendorBadges.map((badgeText, idx) => (
+                      <span key={idx} className="mitra-badge font-medium text-[12px] rounded-xl">
+                        {badgeText}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="mitra-info-list">
@@ -289,22 +346,41 @@ Mohon konfirmasi jadwal penjemputan daur ulang dari pihak ${vendor.name}. Terima
                 />
               </div>
 
+              {/* Multi-select Kategori Kompartemen 1 sampai 5 */}
               <div className="modal-field">
-                <label htmlFor="vendor-badge" className="font-medium text-[14px]">Kategori Spesialisasi</label>
-                <select
-                  id="vendor-badge"
-                  name="badge"
-                  className="rounded-xl font-normal text-[16px]"
-                  value={formData.badge}
-                  onChange={handleInputChange}
-                >
-                  <option value="Sirkuit & PCB">Sirkuit & PCB</option>
-                  <option value="Baterai Lithium">Baterai Lithium</option>
-                  <option value="Kabel & Logam">Kabel & Logam</option>
-                  <option value="Layar & Modul">Layar & Modul</option>
-                  <option value="Sirkuit Terpadu">Sirkuit Terpadu</option>
-                  <option value="Daur Ulang Umum">Daur Ulang Umum</option>
-                </select>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <label className="font-medium text-[14px]">Kategori Spesialisasi Kompartemen</label>
+                  <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
+                    {formData.badges.length} dipilih
+                  </span>
+                </div>
+                <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', margin: '2px 0 6px' }}>
+                  Pilih satu atau lebih kategori kompartemen yang dapat ditampung oleh mitra:
+                </p>
+
+                <div className="category-selection-list" role="group" aria-label="Pilih Kategori Kompartemen">
+                  {KOMPARTEMEN_CATEGORIES.map((komp) => {
+                    const isSelected = formData.badges.includes(komp.name)
+                    return (
+                      <button
+                        key={komp.id}
+                        type="button"
+                        onClick={() => toggleCategory(komp.name)}
+                        className={`category-option-btn ${isSelected ? 'selected' : ''}`}
+                        role="checkbox"
+                        aria-checked={isSelected}
+                      >
+                        <div className="category-option-left">
+                          <div className="category-option-checkbox">
+                            {isSelected && <Check size={13} strokeWidth={3} aria-hidden="true" />}
+                          </div>
+                          <span className="category-option-label">{komp.name}</span>
+                        </div>
+                        <span className="category-option-badge">{komp.code}</span>
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
 
               <div className="modal-field">

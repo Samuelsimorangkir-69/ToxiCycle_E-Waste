@@ -1,12 +1,19 @@
 'use client'
 
 import { useActionState, useState } from 'react'
-import { Eye, EyeOff, AlertCircle, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, ArrowRight, KeyRound } from 'lucide-react'
 import { loginAdmin } from '../admin/actions'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [state, formAction, isPending] = useActionState(loginAdmin, null)
+
+  const handleQuickFill = () => {
+    setEmail('admin@toxiccycle.id')
+    setPassword('admin123')
+  }
 
   return (
     <div className="login-canvas">
@@ -49,6 +56,8 @@ export default function LoginPage() {
                 required
                 disabled={isPending}
                 placeholder="admin@toxiccycle.id"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="form-input font-normal text-[16px] rounded-xl"
               />
             </div>
@@ -67,6 +76,8 @@ export default function LoginPage() {
                 required
                 disabled={isPending}
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="form-input font-normal text-[16px] rounded-xl"
                 style={{ paddingRight: '2.75rem' }}
               />
@@ -99,6 +110,32 @@ export default function LoginPage() {
             <span>{state.error}</span>
           </div>
         )}
+
+        {/* Info Akun Masuk Admin */}
+        <div className="auth-account-box rounded-xl">
+          <div className="auth-account-header">
+            <span className="auth-account-badge">Kredensial Masuk Admin</span>
+            <span className="auth-account-status">Siap Digunakan</span>
+          </div>
+          <div className="auth-account-details">
+            <div className="auth-account-row">
+              <span className="auth-account-label">Email:</span>
+              <code className="auth-account-code">admin@toxiccycle.id</code>
+            </div>
+            <div className="auth-account-row">
+              <span className="auth-account-label">Kata Sandi:</span>
+              <code className="auth-account-code">admin123</code>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleQuickFill}
+            className="btn-quick-fill font-medium text-[13px] rounded-lg"
+          >
+            <KeyRound size={14} aria-hidden="true" />
+            <span>Gunakan Akun Ini Otomatis</span>
+          </button>
+        </div>
       </div>
     </div>
   )
