@@ -49,6 +49,8 @@
 
   /* Shadows: Flat, clean, zero glow */
   --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 20px 35px -8px rgba(0, 0, 0, 0.45), 0 6px 16px -4px rgba(0, 0, 0, 0.25);
 }
 
 /* ---------------------------------------------------------------------------
@@ -93,6 +95,8 @@
 
   /* Shadows: Soft clean flat shadow */
   --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 20px 35px -8px rgba(0, 0, 0, 0.12), 0 6px 16px -4px rgba(0, 0, 0, 0.06);
 }
 
 /* ==========================================================================
@@ -195,6 +199,9 @@ body {
 .chamber-stage-card,
 .sensor-box,
 .activity-row,
+.trend-day-card,
+.node-card,
+.sensor-health-card,
 .auth-card,
 .form-input,
 .btn-action,
@@ -205,7 +212,8 @@ body {
   transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
               border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
               color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ==========================================================================
@@ -228,6 +236,15 @@ body {
   border-radius: var(--radius-xl);
   padding: 32px;
   box-shadow: var(--shadow-subtle);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease;
+}
+
+.auth-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-hover);
 }
 
 .auth-header {
@@ -599,7 +616,9 @@ body {
 
 .btn-action-outline:hover:not(:disabled) {
   background-color: var(--color-surface-hover);
-  border-color: var(--color-border);
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .btn-action-primary {
@@ -610,6 +629,12 @@ body {
 
 .btn-action-primary:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 157, 88, 0.25);
+}
+
+.btn-action:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-action:disabled {
@@ -634,6 +659,38 @@ body {
   flex-direction: column;
   gap: 12px;
   box-shadow: var(--shadow-subtle);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease,
+              background-color 260ms ease;
+}
+
+/* Creative top accent beam */
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.metric-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.metric-card:hover::before {
+  transform: scaleX(1);
 }
 
 .metric-header {
@@ -658,14 +715,46 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 240ms ease,
+              color 240ms ease,
+              border-color 240ms ease;
 }
 
+.metric-card:hover .metric-icon-badge {
+  transform: scale(1.15) rotate(-6deg);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
+}
+
+/* Creative & Interactive Big Value Typography */
 .metric-value {
   font-size: var(--font-h1);
   font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--color-text-primary);
   line-height: 1.1;
+  display: inline-block;
+  transform-origin: left bottom;
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 260ms ease,
+              text-shadow 300ms ease,
+              letter-spacing 300ms ease;
+}
+
+/* When card is hovered, the big text moves dynamically and shines with emerald accent */
+.metric-card:hover .metric-value {
+  transform: translateY(-2px) scale(1.06);
+  color: var(--color-primary);
+  letter-spacing: -0.01em;
+  text-shadow: 0 4px 16px rgba(15, 157, 88, 0.28);
+}
+
+/* Direct cursor hover on the big number reacts with micro-bounce */
+.metric-value:hover {
+  transform: translateY(-4px) scale(1.1) !important;
+  cursor: pointer;
 }
 
 .metric-sub {
@@ -695,6 +784,15 @@ body {
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-subtle);
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease;
+}
+
+.panel-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .panel-header {
@@ -736,6 +834,11 @@ body {
   width: 120px;
   height: 120px;
   flex-shrink: 0;
+  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.panel-card:hover .capacity-circle-wrapper {
+  transform: scale(1.05);
 }
 
 .capacity-circle-text {
@@ -747,11 +850,27 @@ body {
   justify-content: center;
 }
 
+/* Interactive Big Value in Capacity */
 .capacity-percent {
   font-size: var(--font-h1);
   font-weight: 700;
   color: var(--color-text-primary);
   line-height: 1;
+  display: inline-block;
+  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 260ms ease,
+              text-shadow 300ms ease;
+}
+
+.panel-card:hover .capacity-percent {
+  transform: scale(1.08);
+  color: var(--color-primary);
+  text-shadow: 0 4px 16px rgba(15, 157, 88, 0.3);
+}
+
+.capacity-percent:hover {
+  transform: scale(1.15) !important;
+  cursor: pointer;
 }
 
 .capacity-caption {
@@ -805,6 +924,14 @@ body {
   border-radius: var(--radius-md);
   margin-top: 16px;
   margin-bottom: 16px;
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+}
+
+.highest-chamber-callout:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px -4px rgba(245, 158, 11, 0.25);
 }
 
 .highest-callout-left {
@@ -913,14 +1040,34 @@ body {
   justify-content: flex-end;
   width: 16%;
   max-width: 56px;
+  cursor: pointer;
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.barchart-col:hover {
+  transform: translateY(-5px);
+}
+
+.barchart-col:hover .barchart-fill {
+  filter: brightness(1.22);
+}
+
+/* Big Bar Value Tag with Creative Micro-Lift */
 .barchart-val-tag {
   font-size: 12px;
   font-weight: 700;
   color: var(--color-text-primary);
   margin-bottom: 6px;
   line-height: 1;
+  transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 200ms ease,
+              font-weight 200ms ease;
+}
+
+.barchart-col:hover .barchart-val-tag {
+  transform: translateY(-4px) scale(1.2);
+  color: var(--color-primary);
+  font-weight: 800;
 }
 
 .barchart-col.is-max .barchart-val-tag {
@@ -987,6 +1134,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.chamber-bar-item:hover {
+  background-color: var(--color-surface-hover);
+  transform: translateX(4px);
 }
 
 .chamber-bar-labels {
@@ -1036,11 +1191,22 @@ body {
   background-color: var(--color-surface-elevated);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
-  transition: background-color var(--transition-fast);
+  transition: transform var(--transition-normal),
+              background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              box-shadow var(--transition-normal);
+  cursor: default;
 }
 
 .activity-row:hover {
   background-color: var(--color-surface-hover);
+  border-color: var(--color-primary);
+  transform: translateX(6px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.activity-row:hover .activity-dot {
+  transform: scale(1.5);
 }
 
 .activity-left {
@@ -1056,6 +1222,7 @@ body {
   border-radius: var(--radius-full);
   background-color: var(--color-primary);
   flex-shrink: 0;
+  transition: transform var(--transition-fast);
 }
 
 .activity-details {
@@ -1179,6 +1346,19 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease;
+}
+
+.chamber-stage-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-hover);
+}
+
+.chamber-stage-card:hover .chamber-gauge-center {
+  transform: scale(1.04);
 }
 
 .chamber-badge-type {
@@ -1197,6 +1377,7 @@ body {
   width: 220px;
   height: 220px;
   margin-bottom: 28px;
+  transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .gauge-svg {
@@ -1227,12 +1408,28 @@ body {
   justify-content: center;
 }
 
+/* Big Typography in Chamber Gauge */
 .gauge-big-num {
   font-size: 44px;
   font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: -0.04em;
   line-height: 1;
+  display: inline-block;
+  transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 260ms ease,
+              text-shadow 350ms ease;
+}
+
+.chamber-stage-card:hover .gauge-big-num {
+  transform: scale(1.08) translateY(-2px);
+  color: var(--color-primary);
+  text-shadow: 0 4px 20px rgba(15, 157, 88, 0.35);
+}
+
+.gauge-big-num:hover {
+  transform: scale(1.14) translateY(-3px) !important;
+  cursor: pointer;
 }
 
 .gauge-sub-label {
@@ -1259,6 +1456,7 @@ body {
   }
 }
 
+/* Sensor Box & Big Sensor Value */
 .sensor-box {
   background-color: var(--color-surface-elevated);
   border: 1px solid var(--color-border);
@@ -1268,6 +1466,16 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease;
+  cursor: default;
+}
+
+.sensor-box:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary);
 }
 
 .sensor-box-header {
@@ -1287,6 +1495,14 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.sensor-box:hover .sensor-box-icon {
+  transform: scale(1.14) rotate(-6deg);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
 }
 
 .sensor-box-title {
@@ -1295,12 +1511,29 @@ body {
   color: var(--color-text-secondary);
 }
 
+/* Sensor Big Text Typography */
 .sensor-box-value {
   font-size: var(--font-h1);
   font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--color-text-primary);
   line-height: 1.1;
+  display: inline-block;
+  transform-origin: left center;
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 260ms ease,
+              text-shadow 300ms ease;
+}
+
+.sensor-box:hover .sensor-box-value {
+  transform: translateX(4px) scale(1.05);
+  color: var(--color-primary);
+  text-shadow: 0 4px 16px rgba(15, 157, 88, 0.25);
+}
+
+.sensor-box-value:hover {
+  transform: translateX(6px) scale(1.09) !important;
+  cursor: pointer;
 }
 
 .sensor-box-value span {
@@ -1436,12 +1669,18 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  transition: all var(--transition-fast);
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color var(--transition-fast),
+              background-color var(--transition-fast);
+  cursor: pointer;
 }
 
 .trend-day-card:hover {
   border-color: var(--color-primary);
   background-color: var(--color-surface-hover);
+  transform: translateY(-5px) scale(1.04);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .trend-day-card.active-today {
@@ -1462,6 +1701,14 @@ body {
   font-size: 16px;
   font-weight: 700;
   color: var(--color-text-primary);
+  display: inline-block;
+  transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 200ms ease;
+}
+
+.trend-day-card:hover .trend-day-val {
+  transform: scale(1.15);
+  color: var(--color-primary);
 }
 
 .trend-day-kg {
@@ -1688,6 +1935,8 @@ body {
 }
 
 .mitra-card {
+  position: relative;
+  overflow: hidden;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -1697,6 +1946,30 @@ body {
   justify-content: space-between;
   gap: 20px;
   box-shadow: var(--shadow-subtle);
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease;
+}
+
+.mitra-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0px;
+  background-color: var(--color-primary);
+  transition: height 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mitra-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary);
+}
+
+.mitra-card:hover::before {
+  height: 4px;
 }
 
 .mitra-top {
@@ -1712,12 +1985,21 @@ body {
   gap: 10px;
 }
 
+/* Big Typography in Mitra Card */
 .mitra-name {
   font-size: 18px;
   font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: -0.015em;
   line-height: 1.3;
+  display: inline-block;
+  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 240ms ease;
+}
+
+.mitra-card:hover .mitra-name {
+  transform: translateX(4px);
+  color: var(--color-primary);
 }
 
 .mitra-badge {
@@ -1780,11 +2062,17 @@ body {
   gap: 8px;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .btn-whatsapp:hover {
   background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 157, 88, 0.25);
+}
+
+.btn-whatsapp:active {
+  transform: translateY(0);
 }
 
 /* Modal Dialog: Solid Flat without Blur */
@@ -2137,6 +2425,17 @@ body {
   flex-direction: column;
   gap: 16px;
   box-shadow: var(--shadow-subtle);
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease;
+  cursor: default;
+}
+
+.node-card:hover,
+.sensor-health-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary);
 }
 
 .node-card-header {
@@ -2156,12 +2455,28 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.node-card:hover .node-icon-wrapper {
+  transform: scale(1.15) rotate(6deg);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
 }
 
 .node-name {
   font-size: 18px;
   font-weight: 700;
   color: var(--color-text-primary);
+  display: inline-block;
+  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 240ms ease;
+}
+
+.node-card:hover .node-name {
+  transform: translateX(4px);
+  color: var(--color-primary);
 }
 
 .node-role-desc {
@@ -2208,6 +2523,14 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.sensor-health-card:hover .sensor-health-icon {
+  transform: scale(1.15) rotate(-6deg);
+  background-color: var(--color-secondary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-secondary);
 }
 
 .sensor-health-name {
@@ -2240,6 +2563,14 @@ body {
   box-shadow: var(--shadow-subtle);
   position: sticky;
   top: 24px;
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease;
+}
+
+.action-panel-card:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-elevated);
 }
 
 .action-panel-header {
