@@ -1721,6 +1721,15 @@ body {
   border: 1px solid var(--color-border);
   color: var(--color-primary);
   flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.mitra-badges-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  max-width: 65%;
 }
 
 .mitra-info-list {
@@ -1877,6 +1886,172 @@ body {
   margin-top: 8px;
   padding-top: 14px;
   border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Multi-select Kategori Kompartemen Modal */
+.category-selection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.category-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.category-option-btn:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-primary);
+}
+
+.category-option-btn.selected {
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.category-option-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.category-option-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface);
+  color: var(--color-primary-contrast);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.category-option-btn.selected .category-option-checkbox {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.category-option-label {
+  font-size: var(--font-size-label);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.category-option-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.category-option-btn.selected .category-option-badge {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
+}
+
+/* Auth / Login Quick Credentials Box */
+.auth-account-box {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-account-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.auth-account-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+}
+
+.auth-account-status {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.auth-account-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.auth-account-label {
+  color: var(--color-text-secondary);
+}
+
+.auth-account-code {
+  font-family: monospace;
+  font-size: 12px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: var(--color-text-primary);
+}
+
+.btn-quick-fill {
+  width: 100%;
+  padding: 9px 12px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.btn-quick-fill:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-primary);
 }
 
 /* ==========================================================================
