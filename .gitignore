@@ -35,7 +35,19 @@ dist-ssr
 .agents
 .next
 .skills-lock.json
-.PRD.md 
-.DESIGN.md 
-.AGENTS.md
 .skills
+
+# AI & Specification Documents
+AGENTS.md
+agents.md
+agent.md
+.AGENTS.md
+PRD.md
+prd.md
+.PRD.md
+DESIGN.md
+design.md
+.DESIGN.md
+
+# Ignored Folders
+ewaste/
