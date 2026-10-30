@@ -49,6 +49,8 @@
 
   /* Shadows: Flat, clean, zero glow */
   --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 14px 28px -4px rgba(0, 0, 0, 0.45), 0 6px 12px -4px rgba(0, 0, 0, 0.25);
 }
 
 /* ---------------------------------------------------------------------------
@@ -93,6 +95,8 @@
 
   /* Shadows: Soft clean flat shadow */
   --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 14px 28px -4px rgba(0, 0, 0, 0.09), 0 6px 12px -4px rgba(0, 0, 0, 0.05);
 }
 
 /* ==========================================================================
@@ -195,6 +199,10 @@ body {
 .chamber-stage-card,
 .sensor-box,
 .activity-row,
+.trend-day-card,
+.node-card,
+.sensor-health-card,
+.action-panel-card,
 .auth-card,
 .form-input,
 .btn-action,
@@ -205,7 +213,8 @@ body {
   transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
               border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
               color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ==========================================================================
@@ -228,6 +237,15 @@ body {
   border-radius: var(--radius-xl);
   padding: 32px;
   box-shadow: var(--shadow-subtle);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-hover);
 }
 
 .auth-header {
@@ -599,7 +617,9 @@ body {
 
 .btn-action-outline:hover:not(:disabled) {
   background-color: var(--color-surface-hover);
-  border-color: var(--color-border);
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .btn-action-primary {
@@ -610,6 +630,12 @@ body {
 
 .btn-action-primary:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 157, 88, 0.25);
+}
+
+.btn-action:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-action:disabled {
@@ -634,6 +660,37 @@ body {
   flex-direction: column;
   gap: 12px;
   box-shadow: var(--shadow-subtle);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease,
+              background-color 260ms ease;
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--color-primary);
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.35), 0 4px 12px -2px rgba(0, 0, 0, 0.15);
+}
+
+.metric-card:hover::before {
+  transform: scaleX(1);
 }
 
 .metric-header {
@@ -658,6 +715,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 240ms ease,
+              color 240ms ease,
+              border-color 240ms ease;
+}
+
+.metric-card:hover .metric-icon-badge {
+  transform: scale(1.15) rotate(-6deg);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
 }
 
 .metric-value {
@@ -695,6 +763,15 @@ body {
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-subtle);
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 260ms ease;
+}
+
+.panel-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-border-focus);
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.25);
 }
 
 .panel-header {
@@ -805,6 +882,14 @@ body {
   border-radius: var(--radius-md);
   margin-top: 16px;
   margin-bottom: 16px;
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+}
+
+.highest-chamber-callout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(245, 158, 11, 0.25);
 }
 
 .highest-callout-left {
@@ -913,6 +998,16 @@ body {
   justify-content: flex-end;
   width: 16%;
   max-width: 56px;
+  cursor: pointer;
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.barchart-col:hover {
+  transform: translateY(-4px);
+}
+
+.barchart-col:hover .barchart-fill {
+  filter: brightness(1.2);
 }
 
 .barchart-val-tag {
@@ -987,6 +1082,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.chamber-bar-item:hover {
+  background-color: var(--color-surface-hover);
+  transform: translateX(4px);
 }
 
 .chamber-bar-labels {
@@ -1036,11 +1139,22 @@ body {
   background-color: var(--color-surface-elevated);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
-  transition: background-color var(--transition-fast);
+  transition: transform var(--transition-normal),
+              background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              box-shadow var(--transition-normal);
+  cursor: default;
 }
 
 .activity-row:hover {
   background-color: var(--color-surface-hover);
+  border-color: var(--color-primary);
+  transform: translateX(6px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.activity-row:hover .activity-dot {
+  transform: scale(1.5);
 }
 
 .activity-left {
@@ -1056,6 +1170,7 @@ body {
   border-radius: var(--radius-full);
   background-color: var(--color-primary);
   flex-shrink: 0;
+  transition: transform var(--transition-fast);
 }
 
 .activity-details {
@@ -1179,6 +1294,19 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chamber-stage-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+  border-color: var(--color-border-hover);
+}
+
+.chamber-stage-card:hover .chamber-gauge-center {
+  transform: scale(1.03);
 }
 
 .chamber-badge-type {
@@ -1197,6 +1325,7 @@ body {
   width: 220px;
   height: 220px;
   margin-bottom: 28px;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gauge-svg {
@@ -1268,6 +1397,16 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.sensor-box:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary);
 }
 
 .sensor-box-header {
@@ -1287,6 +1426,14 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.sensor-box:hover .sensor-box-icon {
+  transform: scale(1.12) rotate(-6deg);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
 }
 
 .sensor-box-title {
@@ -1436,12 +1583,18 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  transition: all var(--transition-fast);
+  transition: transform var(--transition-normal),
+              box-shadow var(--transition-normal),
+              border-color var(--transition-fast),
+              background-color var(--transition-fast);
+  cursor: pointer;
 }
 
 .trend-day-card:hover {
   border-color: var(--color-primary);
   background-color: var(--color-surface-hover);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .trend-day-card.active-today {
@@ -1688,6 +1841,8 @@ body {
 }
 
 .mitra-card {
+  position: relative;
+  overflow: hidden;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -1697,6 +1852,34 @@ body {
   justify-content: space-between;
   gap: 20px;
   box-shadow: var(--shadow-subtle);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mitra-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0px;
+  background-color: var(--color-primary);
+  transition: height 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mitra-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary);
+}
+
+.mitra-card:hover::before {
+  height: 4px;
+}
+
+.mitra-card:hover .mitra-name {
+  color: var(--color-primary);
 }
 
 .mitra-top {
@@ -1718,6 +1901,7 @@ body {
   color: var(--color-text-primary);
   letter-spacing: -0.015em;
   line-height: 1.3;
+  transition: color var(--transition-fast);
 }
 
 .mitra-badge {
@@ -1780,11 +1964,13 @@ body {
   gap: 8px;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .btn-whatsapp:hover {
   background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 157, 88, 0.25);
 }
 
 /* Modal Dialog: Solid Flat without Blur */
@@ -2137,6 +2323,31 @@ body {
   flex-direction: column;
   gap: 16px;
   box-shadow: var(--shadow-subtle);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.node-card:hover,
+.sensor-health-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary);
+}
+
+.node-card:hover .node-icon-wrapper {
+  transform: scale(1.12) rotate(6deg);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
+}
+
+.sensor-health-card:hover .sensor-health-icon {
+  transform: scale(1.12) rotate(-6deg);
+  background-color: var(--color-secondary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-secondary);
 }
 
 .node-card-header {
@@ -2156,6 +2367,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all var(--transition-fast);
 }
 
 .node-name {
@@ -2208,6 +2420,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all var(--transition-fast);
 }
 
 .sensor-health-name {
@@ -2240,6 +2453,14 @@ body {
   box-shadow: var(--shadow-subtle);
   position: sticky;
   top: 24px;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-panel-card:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-elevated);
 }
 
 .action-panel-header {
