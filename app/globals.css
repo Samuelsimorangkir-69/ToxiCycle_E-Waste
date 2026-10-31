@@ -1900,8 +1900,7 @@ body {
    US-04: MANAJEMEN MITRA DAUR ULANG (SOLID MINIMALIST)
    ========================================================================== */
 .mitra-page-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .mitra-topbar-wrapper {
@@ -1928,9 +1927,85 @@ body {
   margin-top: 4px;
 }
 
+/* Filter & Search Bar */
+.mitra-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.mitra-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 260px;
+  max-width: 440px;
+}
+
+.mitra-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.mitra-search-input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  font-size: var(--font-body);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mitra-search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.mitra-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mitra-filter-btn {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.mitra-filter-btn:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-hover);
+}
+
+.mitra-filter-btn.active {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
+  font-weight: 600;
+}
+
 .mitra-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 24px;
 }
 
@@ -1939,7 +2014,7 @@ body {
   overflow: hidden;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xl);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -1978,11 +2053,44 @@ body {
   gap: 16px;
 }
 
-.mitra-title-row {
+.mitra-card-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+}
+
+.mitra-company-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.mitra-company-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.mitra-card:hover .mitra-company-avatar {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  transform: scale(1.05);
+}
+
+.mitra-company-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 /* Big Typography in Mitra Card */
@@ -1992,48 +2100,101 @@ body {
   color: var(--color-text-primary);
   letter-spacing: -0.015em;
   line-height: 1.3;
-  display: inline-block;
-  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              color 240ms ease;
+  transition: color 240ms ease;
 }
 
 .mitra-card:hover .mitra-name {
-  transform: translateX(4px);
   color: var(--color-primary);
 }
 
-.mitra-badge {
-  font-size: var(--font-caption);
-  font-weight: 500;
-  padding: 4px 8px;
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface-elevated);
-  border: 1px solid var(--color-border);
+.mitra-verified-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--color-primary);
-  flex-shrink: 0;
-  white-space: nowrap;
+}
+
+/* Dedicated Category Box inside Card */
+.mitra-category-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.mitra-category-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mitra-category-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.mitra-category-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-primary);
 }
 
 .mitra-badges-wrap {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  justify-content: flex-end;
-  max-width: 65%;
 }
 
+.mitra-badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.mitra-card:hover .mitra-badge {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Balanced Key-Value Table / List */
 .mitra-info-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  border-top: 1px solid var(--color-border-subtle);
+  margin-top: 2px;
 }
 
 .mitra-info-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.mitra-info-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
+  font-size: 13.5px;
+  font-weight: 500;
+  flex-shrink: 0;
 }
 
 .mitra-info-icon {
@@ -2043,13 +2204,15 @@ body {
 
 .mitra-info-value {
   color: var(--color-text-primary);
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 13.5px;
+  text-align: right;
   word-break: break-all;
 }
 
 .btn-whatsapp {
   width: 100%;
-  padding: 10px 16px;
+  padding: 11px 16px;
   font-size: var(--font-btn);
   font-weight: 600;
   color: var(--color-primary-contrast);
@@ -2075,7 +2238,7 @@ body {
   transform: translateY(0);
 }
 
-/* Modal Dialog: Solid Flat without Blur */
+/* Modal Dialog: Solid Flat without Blur with Micro-Interactions */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -2085,21 +2248,51 @@ body {
   align-items: center;
   justify-content: center;
   padding: 16px;
+  animation: modalFadeIn 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .modal-card {
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: 28px;
-  box-shadow: var(--shadow-subtle);
+  box-shadow: var(--shadow-card-hover);
   display: flex;
   flex-direction: column;
   gap: 20px;
   max-height: 90vh;
   overflow-y: auto;
+  animation: modalSlideUp 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform 150ms ease;
+}
+
+.modal-card.shake {
+  animation: modalShake 420ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modalShake {
+  10%, 90% { transform: translate3d(-3px, 0, 0); }
+  20%, 80% { transform: translate3d(5px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-7px, 0, 0); }
+  40%, 60% { transform: translate3d(7px, 0, 0); }
 }
 
 .modal-header {
@@ -2268,6 +2461,221 @@ body {
   background-color: var(--color-primary);
   color: var(--color-primary-contrast);
   border-color: var(--color-primary);
+}
+
+.category-option-btn:active {
+  transform: scale(0.985);
+}
+
+/* Interaksi Tombol Tambah Mitra */
+.btn-tambah-mitra {
+  position: relative;
+  overflow: hidden;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.btn-tambah-mitra:hover .btn-plus-icon {
+  transform: rotate(90deg);
+}
+
+.btn-plus-icon {
+  transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-tambah-mitra:active {
+  transform: scale(0.96);
+}
+
+/* Input Group with Icons inside Modal */
+.modal-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.modal-input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  transition: color var(--transition-fast);
+  z-index: 2;
+}
+
+.modal-input-wrap input {
+  padding-left: 42px !important;
+}
+
+.modal-input-wrap input:focus + .modal-input-icon,
+.modal-input-wrap input:focus ~ .modal-input-icon {
+  color: var(--color-primary);
+}
+
+.modal-input-error {
+  border-color: var(--color-error-text) !important;
+  box-shadow: 0 0 0 1px var(--color-error-text) !important;
+}
+
+/* Quick Select Buttons in Modal */
+.category-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.btn-quick-tag {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-quick-tag:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-hover);
+}
+
+/* Toast Notification (Floating Alert) */
+.mitra-toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.mitra-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-primary);
+  border-left: 4px solid var(--color-primary);
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card-hover);
+  animation: toastSlideIn 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  max-width: 420px;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mitra-toast-icon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.mitra-toast-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.mitra-toast-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.mitra-toast-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.mitra-toast-close {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.mitra-toast-close:hover {
+  color: var(--color-text-primary);
+}
+
+/* Highlighted Newly Added Card */
+.mitra-card-highlighted {
+  border-color: var(--color-primary) !important;
+  animation: cardHighlightPulse 2.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardHighlightPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.65);
+    transform: translateY(-4px) scale(1.02);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(21, 128, 61, 0);
+    transform: translateY(-2px) scale(1.01);
+  }
+  100% {
+    box-shadow: var(--shadow-subtle);
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mitra-badge-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  animation: modalFadeIn 300ms ease;
+}
+
+.btn-delete-mitra {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-delete-mitra:hover {
+  color: var(--color-error-text);
+  background-color: var(--color-error-bg);
 }
 
 /* Auth / Login Quick Credentials Box */
