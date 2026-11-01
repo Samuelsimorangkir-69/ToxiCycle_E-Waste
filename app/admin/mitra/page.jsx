@@ -18,6 +18,12 @@ import {
   AlertCircle,
   Search,
 } from 'lucide-react'
+import {
+  ECONOMIC_PRICES_EVENT,
+  E_WASTE_CATEGORIES,
+  formatRupiah,
+  readPriceEntries,
+} from '../economy'
 
 export const KOMPARTEMEN_CATEGORIES = [
   { id: 'komp-1', name: 'Kompartemen 1 — Baterai + Power Bank', code: 'Komp 1', keyword: 'Baterai' },
@@ -112,6 +118,7 @@ export default function MitraPage() {
   const [errorMsg, setErrorMsg] = useState('')
   const [newlyAddedId, setNewlyAddedId] = useState(null)
   const [toast, setToast] = useState(null)
+  const [priceEntries, setPriceEntries] = useState([])
 
   const nameInputRef = useRef(null)
 
@@ -135,6 +142,17 @@ export default function MitraPage() {
       }
     } catch {
       // Ignore fallback
+    }
+  }, [])
+
+  useEffect(() => {
+    const syncPrices = () => setPriceEntries(readPriceEntries())
+    syncPrices()
+    window.addEventListener('storage', syncPrices)
+    window.addEventListener(ECONOMIC_PRICES_EVENT, syncPrices)
+    return () => {
+      window.removeEventListener('storage', syncPrices)
+      window.removeEventListener(ECONOMIC_PRICES_EVENT, syncPrices)
     }
   }, [])
 
@@ -192,40 +210,53 @@ export default function MitraPage() {
     setIsShaking(false)
   }
 
-  // Data kapasitas tiap kompartemen: max 10 kg per kompartemen
-  const KOMPARTEMEN_SENSOR = [
-    { label: 'Baterai + Power Bank', percent: 68, maxKg: 10 },
-    { label: 'Keyboard + Mouse',     percent: 45, maxKg: 10 },
-    { label: 'Kabel',                percent: 54, maxKg: 10 },
-    { label: 'Charger',              percent: 38, maxKg: 10 },
-    { label: 'PCB',                  percent: 82, maxKg: 10 },
-  ]
-
   const generateWhatsAppLink = (vendor) => {
     const badges = getVendorBadges(vendor)
-    const badgesText = badges.map((b) => `- ${b}`).join('\n')
+    const pricesByCategory = new Map(
+      priceEntries
+        .filter((entry) => entry.pricePerKg !== '' && Number.isFinite(Number(entry.pricePerKg)))
+        .map((entry) => [entry.id, Number(entry.pricePerKg)])
+    )
+    const vendorCategories = KOMPARTEMEN_CATEGORIES
+      .map((category, index) => {
+        if (!badges.includes(category.name)) return null
+        const waste = E_WASTE_CATEGORIES[index]
+        const pricePerKg = pricesByCategory.get(waste.id)
+        return {
+          ...category,
+          weightKg: waste.weightKg,
+          pricePerKg,
+          subtotal: pricePerKg == null ? null : waste.weightKg * pricePerKg,
+        }
+      })
+      .filter(Boolean)
 
-    // Hitung berat aktual tiap kompartemen: (percent / 100) * maxKg, dibulatkan 1 desimal
-    const sensorLines = KOMPARTEMEN_SENSOR.map((k, i) => {
-      const beratKg = ((k.percent / 100) * k.maxKg).toFixed(1).replace('.', ',')
-      return `- Kompartemen ${i + 1} (${k.label}): ${k.percent}% (${beratKg} kg)`
+    const categoryLines = vendorCategories.map((category) => {
+      const weight = `${category.weightKg.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg`
+      if (category.subtotal == null) {
+        return `- ${category.name}: ${weight} · harga acuan belum diatur`
+      }
+      return `- ${category.name}: ${weight} × ${formatRupiah(category.pricePerKg)}/kg = ${formatRupiah(category.subtotal)}`
     }).join('\n')
-
-    const totalKg = KOMPARTEMEN_SENSOR.reduce(
-      (sum, k) => sum + (k.percent / 100) * k.maxKg,
-      0
-    ).toFixed(1).replace('.', ',')
+    const totalKg = vendorCategories.reduce((sum, category) => sum + category.weightKg, 0)
+    const pricedCategories = vendorCategories.filter((category) => category.subtotal != null)
+    const missingPrices = vendorCategories.length - pricedCategories.length
+    const estimatedValue = pricedCategories.reduce((sum, category) => sum + category.subtotal, 0)
+    const valueSummary = pricedCategories.length === 0
+      ? 'Belum tersedia — harga acuan kategori mitra belum diatur.'
+      : `${formatRupiah(estimatedValue)}${missingPrices > 0 ? ` (estimasi parsial; ${missingPrices} kategori belum memiliki harga)` : ''}`
+    const categorySummary = categoryLines || '- Belum ada kategori spesialisasi yang cocok dengan data kompartemen.'
 
     const message = `Halo ${vendor.pic}, saya Admin ToxicCycle.
 
-Berikut pembaruan status kapasitas IoT Smart Drop-Box saat ini:
-${sensorLines}
-Total Akumulasi: ${totalKg} kg.
+Berikut rincian e-waste untuk kategori spesialisasi ${vendor.name}:
+${categorySummary}
+Total berat kategori mitra: ${totalKg.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg.
+Estimasi nilai acuan: ${valueSummary}
 
-Kategori Spesialisasi Penjemputan (${vendor.name}):
-${badgesText}
+Estimasi menggunakan berat tercatat × harga acuan per kg dan bukan penawaran harga final.
 
-Mohon konfirmasi jadwal penjemputan daur ulang dari pihak ${vendor.name}. Terima kasih.`
+Mohon konfirmasi jadwal penjemputan dan kesesuaian kategori. Terima kasih.`
 
     return `https://wa.me/${vendor.phoneClean}?text=${encodeURIComponent(message)}`
   }

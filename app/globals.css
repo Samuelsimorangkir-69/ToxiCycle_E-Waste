@@ -763,6 +763,380 @@ body {
   color: var(--color-text-muted);
 }
 
+/* Reference price management and dashboard valuation */
+.valuation-panel {
+  margin: 0 0 24px;
+}
+
+.valuation-header,
+.reference-prices-heading,
+.reference-prices-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.valuation-header {
+  margin-bottom: 18px;
+}
+
+.valuation-description,
+.valuation-footnote,
+.reference-prices-heading p,
+.add-price-category-copy p {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 5px;
+}
+
+.valuation-manage-link {
+  color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.valuation-table-wrap,
+.reference-prices-table-wrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.valuation-table,
+.reference-prices-table {
+  border-collapse: collapse;
+  min-width: 620px;
+  text-align: left;
+  width: 100%;
+}
+
+.valuation-table th,
+.valuation-table td,
+.reference-prices-table th,
+.reference-prices-table td {
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+.valuation-table thead th,
+.reference-prices-table thead th {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.valuation-table tbody th,
+.reference-prices-table tbody th {
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.valuation-table tbody td,
+.reference-prices-table tbody td {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.valuation-table tfoot th,
+.valuation-table tfoot td {
+  border-bottom: 0;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  padding-top: 16px;
+}
+
+.valuation-table tfoot td {
+  color: var(--color-primary);
+  text-align: right;
+}
+
+.valuation-footnote {
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+.reference-prices-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 40px;
+}
+
+.reference-prices-heading {
+  align-items: flex-start;
+  margin-bottom: 2px;
+}
+
+.reference-prices-heading h1 {
+  color: var(--color-text-primary);
+  font-size: var(--font-h1);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.reference-prices-count {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.reference-prices-count svg {
+  color: var(--color-primary);
+}
+
+.reference-prices-note {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  display: grid;
+  gap: 5px;
+  padding: 16px 18px;
+}
+
+.reference-prices-note strong {
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.reference-prices-note span {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.reference-prices-form,
+.add-price-category {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.reference-prices-table {
+  min-width: 700px;
+}
+
+.reference-prices-table thead th {
+  padding-top: 4px;
+}
+
+.price-category-name,
+.price-category-meta {
+  display: block;
+}
+
+.price-category-meta {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.price-input-wrap {
+  align-items: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  display: inline-flex;
+  min-height: 42px;
+  max-width: 240px;
+  width: 100%;
+}
+
+.price-input-wrap:focus-within {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-primary) 22%, transparent);
+}
+
+.price-input-prefix {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding-left: 12px;
+}
+
+.price-input-wrap input {
+  background: transparent;
+  border: 0;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 14px;
+  min-width: 0;
+  outline: 0;
+  padding: 10px 10px 10px 7px;
+  width: 100%;
+}
+
+.price-input-wrap input::placeholder,
+.add-price-category-fields input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.price-value-cell {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.price-remove-button {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  min-height: 36px;
+  min-width: 36px;
+}
+
+.price-remove-button:hover {
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
+}
+
+.price-remove-button:focus-visible,
+.valuation-manage-link:focus-visible,
+.add-price-category-fields input:focus-visible {
+  outline: 3px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.price-form-feedback {
+  align-items: center;
+  display: flex;
+  font-size: 14px;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+
+.price-form-feedback.is-error {
+  color: var(--color-error-text);
+}
+
+.price-form-feedback.is-success {
+  color: var(--color-primary);
+}
+
+.reference-prices-footer {
+  border-top: 1px solid var(--color-border-subtle);
+  margin-top: 10px;
+  padding-top: 16px;
+}
+
+.reference-prices-footer > span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.reference-prices-footer .btn-action,
+.add-price-category-fields .btn-action {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.add-price-category-copy h2 {
+  color: var(--color-text-primary);
+}
+
+.add-price-category-fields {
+  align-items: end;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(160px, 1fr) minmax(180px, 0.8fr) auto;
+  margin-top: 18px;
+}
+
+.add-price-category-fields label > span {
+  color: var(--color-text-secondary);
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.add-price-category-fields label > input {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 14px;
+  min-height: 42px;
+  padding: 9px 12px;
+  width: 100%;
+}
+
+.price-loading-cell {
+  color: var(--color-text-muted);
+  padding: 20px 14px !important;
+  text-align: center;
+}
+
+.sr-only {
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+@media (max-width: 760px) {
+  .reference-prices-heading,
+  .reference-prices-footer,
+  .valuation-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reference-prices-heading h1 {
+    font-size: 26px;
+  }
+
+  .reference-prices-form,
+  .add-price-category {
+    padding: 16px;
+  }
+
+  .reference-prices-footer .btn-action {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .add-price-category-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .add-price-category-fields .btn-action {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
 /* Main 2-Column Telemetry Grid */
 .telemetry-row {
   display: grid;

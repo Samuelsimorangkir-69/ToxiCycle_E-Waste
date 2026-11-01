@@ -1,17 +1,58 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { RotateCw, Download, Layers, Scale, Banknote, AlertTriangle } from 'lucide-react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
+import Link from 'next/link'
+import { RotateCw, Download, Layers, Scale, Banknote, AlertTriangle, ArrowUpRight } from 'lucide-react'
 import MetricCard from '../../components/MetricCard'
 import { getCapacityColor } from '../capacity-color'
+import { ECONOMIC_PRICES_EVENT, E_WASTE_CATEGORIES, formatRupiah, readPriceEntries } from './economy'
 import { refreshTelemetry, exportTelemetryCSV } from './actions'
 
 export default function AdminDashboardPage() {
   const [isPending, startTransition] = useTransition()
   const [isExporting, setIsExporting] = useState(false)
   const [lastUpdated, setLastUpdated] = useState('Baru saja')
+  const [priceEntries, setPriceEntries] = useState([])
+  const [pricesReady, setPricesReady] = useState(false)
   const overallCapacityPercent = 74
   const overallCapacityColor = getCapacityColor(overallCapacityPercent)
+
+  useEffect(() => {
+    const syncPrices = () => {
+      setPriceEntries(readPriceEntries())
+      setPricesReady(true)
+    }
+
+    syncPrices()
+    window.addEventListener('storage', syncPrices)
+    window.addEventListener(ECONOMIC_PRICES_EVENT, syncPrices)
+    return () => {
+      window.removeEventListener('storage', syncPrices)
+      window.removeEventListener(ECONOMIC_PRICES_EVENT, syncPrices)
+    }
+  }, [])
+
+  const valuation = useMemo(() => {
+    const configuredPrices = new Map(
+      priceEntries
+        .filter((entry) => entry.pricePerKg !== '' && Number.isFinite(Number(entry.pricePerKg)))
+        .map((entry) => [entry.id, Number(entry.pricePerKg)])
+    )
+    const categoryValues = E_WASTE_CATEGORIES.map((category) => ({
+      ...category,
+      pricePerKg: configuredPrices.get(category.id),
+      subtotal: configuredPrices.has(category.id)
+        ? category.weightKg * configuredPrices.get(category.id)
+        : null,
+    }))
+    const configuredCount = categoryValues.filter((category) => category.subtotal !== null).length
+    return {
+      categoryValues,
+      configuredCount,
+      missingCount: categoryValues.length - configuredCount,
+      total: categoryValues.reduce((sum, category) => sum + (category.subtotal || 0), 0),
+    }
+  }, [priceEntries])
 
   // Handle Refresh Sensor action
   const handleRefresh = () => {
@@ -56,14 +97,24 @@ export default function AdminDashboardPage() {
       title: 'Berat Akumulasi',
       value: '28,7',
       unit: 'kg',
-      subtext: 'Beban terisi 28,7 kg dari kapasitas 50 kg (5 x 10 kg load cell)',
+      subtext: 'Total berat sensor dari 5 kompartemen',
       icon: Scale,
     },
     {
       title: 'Estimasi Valuasi Daur Ulang',
-      value: 'Rp 9.615.000',
+      value: !pricesReady
+        ? 'Memuat…'
+        : valuation.configuredCount === 0
+          ? 'Atur harga'
+          : formatRupiah(valuation.total),
       unit: '',
-      subtext: 'Berdasarkan indeks logam daur ulang',
+      subtext: !pricesReady
+        ? 'Mengambil harga acuan'
+        : valuation.configuredCount === 0
+          ? 'Tambahkan harga per kg untuk mulai menghitung nilai.'
+          : valuation.missingCount > 0
+            ? `Estimasi parsial · ${valuation.missingCount} kategori belum memiliki harga`
+            : 'Estimasi berat × harga acuan per kategori',
       icon: Banknote,
     },
   ]
@@ -136,6 +187,47 @@ export default function AdminDashboardPage() {
             icon={item.icon}
           />
         ))}
+      </section>
+
+      <section className="valuation-panel panel-card" aria-labelledby="valuation-heading">
+        <div className="valuation-header">
+          <div>
+            <h2 id="valuation-heading" className="panel-title font-semibold text-[24px]">Estimasi nilai e-waste</h2>
+            <p className="valuation-description">Nilai dihitung dari berat tiap kategori dikalikan harga acuan per kilogram.</p>
+          </div>
+          <Link href="/admin/harga" className="valuation-manage-link">
+            Kelola harga <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+        <div className="valuation-table-wrap">
+          <table className="valuation-table">
+            <thead>
+              <tr>
+                <th scope="col">Kategori</th>
+                <th scope="col">Berat tercatat</th>
+                <th scope="col">Harga acuan / kg</th>
+                <th scope="col">Estimasi nilai</th>
+              </tr>
+            </thead>
+            <tbody>
+              {valuation.categoryValues.map((category) => (
+                <tr key={category.id}>
+                  <th scope="row">{category.name}</th>
+                  <td>{category.weightKg.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg</td>
+                  <td>{category.pricePerKg == null ? 'Belum diatur' : formatRupiah(category.pricePerKg)}</td>
+                  <td>{category.subtotal == null ? '—' : formatRupiah(category.subtotal)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colSpan="3">Total estimasi {valuation.missingCount > 0 && valuation.configuredCount > 0 ? '(parsial)' : ''}</th>
+                <td>{valuation.configuredCount === 0 ? 'Belum tersedia' : formatRupiah(valuation.total)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <p className="valuation-footnote">Berat yang tampil saat ini masih memakai data contoh kompartemen. Estimasi otomatis dihitung ulang setelah harga acuan disimpan.</p>
       </section>
 
       {/* Main Spacious Grid: Chamber Capacity & AI Detection Logs */}
