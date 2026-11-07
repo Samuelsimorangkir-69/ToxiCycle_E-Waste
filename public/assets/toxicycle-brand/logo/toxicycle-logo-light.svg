@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="220" viewBox="0 0 1000 220" role="img" aria-labelledby="title desc">
+<title id="title">ToxicCycle</title><desc id="desc">ToxicCycle e-waste drop-box and IoT platform logo</desc>
+<rect x="24" y="42" width="136" height="136" rx="32" fill="#15803D"/>
+<g transform="translate(54 72) scale(3.2)" fill="none" stroke="#FFFFFF" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+<path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/>
+<path d="M11 19h8.2a1.8 1.8 0 0 0 1.57-.88 1.78 1.78 0 0 0 .005-1.78L17.1 9.5"/>
+<path d="M13 3.99a1.8 1.8 0 0 0-2 0l-3.9 6.7a1.8 1.8 0 0 0 0 1.8l2.5 4.3"/>
+<circle cx="12" cy="12" r="2.5"/></g>
+<text x="198" y="127" fill="#1F2937" font-family="Plus Jakarta Sans,Arial,sans-serif" font-size="74" font-weight="700" letter-spacing="-2">ToxicCycle</text>
+<text x="202" y="168" fill="#4B5563" font-family="Plus Jakarta Sans,Arial,sans-serif" font-size="22" font-weight="500" letter-spacing="2">E-WASTE  ·  IOT SMART DROP-BOX</text>
+</svg>

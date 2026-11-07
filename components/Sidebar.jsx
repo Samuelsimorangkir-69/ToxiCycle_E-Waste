@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useFormStatus } from 'react-dom'
-import { LayoutDashboard, Boxes, Users, Cpu, LogOut } from 'lucide-react'
+import { LayoutDashboard, Boxes, Users, Cpu, Banknote, LogOut } from 'lucide-react'
 import { logoutAdmin } from '../app/admin/actions'
 import ThemeToggle from './ThemeToggle'
 
@@ -27,6 +27,11 @@ const navigationItems = [
     name: 'Perangkat Keras',
     href: '/admin/hardware',
     icon: Cpu,
+  },
+  {
+    name: 'Harga Acuan',
+    href: '/admin/harga',
+    icon: Banknote,
   },
 ]
 
@@ -72,7 +77,7 @@ export default function Sidebar() {
                 <circle cx="12" cy="12" r="2.5" />
               </svg>
             </div>
-            <span className="brand-title font-bold text-[32px]">ToxicCycle</span>
+            <span className="brand-title font-bold">ToxicCycle</span>
           </Link>
           <ThemeToggle />
         </div>

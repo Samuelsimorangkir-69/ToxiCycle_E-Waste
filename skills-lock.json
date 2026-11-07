@@ -12,6 +12,12 @@
       "sourceType": "github",
       "skillPath": "SKILL.md",
       "computedHash": "5a736383765ca335454f89c4baf256996afe85bd9459828bc29f05905172b039"
+    },
+    "video-demo": {
+      "source": "nilbuild/video-demo",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "d23ba89ed3ddc810f48a0211a16616e1c2b4052b0f1a4a0f4bd048a7eceeb093"
     }
   }
 }

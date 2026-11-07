@@ -1,14 +1,58 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { RotateCw, Download, Layers, Scale, Banknote, AlertTriangle } from 'lucide-react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
+import Link from 'next/link'
+import { RotateCw, Download, Layers, Scale, Banknote, AlertTriangle, ArrowUpRight } from 'lucide-react'
 import MetricCard from '../../components/MetricCard'
+import { getCapacityColor } from '../capacity-color'
+import { ECONOMIC_PRICES_EVENT, E_WASTE_CATEGORIES, formatRupiah, readPriceEntries } from './economy'
 import { refreshTelemetry, exportTelemetryCSV } from './actions'
 
 export default function AdminDashboardPage() {
   const [isPending, startTransition] = useTransition()
   const [isExporting, setIsExporting] = useState(false)
   const [lastUpdated, setLastUpdated] = useState('Baru saja')
+  const [priceEntries, setPriceEntries] = useState([])
+  const [pricesReady, setPricesReady] = useState(false)
+  const overallCapacityPercent = 74
+  const overallCapacityColor = getCapacityColor(overallCapacityPercent)
+
+  useEffect(() => {
+    const syncPrices = () => {
+      setPriceEntries(readPriceEntries())
+      setPricesReady(true)
+    }
+
+    syncPrices()
+    window.addEventListener('storage', syncPrices)
+    window.addEventListener(ECONOMIC_PRICES_EVENT, syncPrices)
+    return () => {
+      window.removeEventListener('storage', syncPrices)
+      window.removeEventListener(ECONOMIC_PRICES_EVENT, syncPrices)
+    }
+  }, [])
+
+  const valuation = useMemo(() => {
+    const configuredPrices = new Map(
+      priceEntries
+        .filter((entry) => entry.pricePerKg !== '' && Number.isFinite(Number(entry.pricePerKg)))
+        .map((entry) => [entry.id, Number(entry.pricePerKg)])
+    )
+    const categoryValues = E_WASTE_CATEGORIES.map((category) => ({
+      ...category,
+      pricePerKg: configuredPrices.get(category.id),
+      subtotal: configuredPrices.has(category.id)
+        ? category.weightKg * configuredPrices.get(category.id)
+        : null,
+    }))
+    const configuredCount = categoryValues.filter((category) => category.subtotal !== null).length
+    return {
+      categoryValues,
+      configuredCount,
+      missingCount: categoryValues.length - configuredCount,
+      total: categoryValues.reduce((sum, category) => sum + (category.subtotal || 0), 0),
+    }
+  }, [priceEntries])
 
   // Handle Refresh Sensor action
   const handleRefresh = () => {
@@ -53,25 +97,35 @@ export default function AdminDashboardPage() {
       title: 'Berat Akumulasi',
       value: '28,7',
       unit: 'kg',
-      subtext: 'Beban terisi 28,7 kg dari kapasitas 50 kg (5 x 10 kg load cell)',
+      subtext: 'Total berat sensor dari 5 kompartemen',
       icon: Scale,
     },
     {
       title: 'Estimasi Valuasi Daur Ulang',
-      value: 'Rp 9.615.000',
+      value: !pricesReady
+        ? 'Memuat…'
+        : valuation.configuredCount === 0
+          ? 'Atur harga'
+          : formatRupiah(valuation.total),
       unit: '',
-      subtext: 'Berdasarkan indeks logam daur ulang',
+      subtext: !pricesReady
+        ? 'Mengambil harga acuan'
+        : valuation.configuredCount === 0
+          ? 'Tambahkan harga per kg untuk mulai menghitung nilai.'
+          : valuation.missingCount > 0
+            ? `Estimasi parsial · ${valuation.missingCount} kategori belum memiliki harga`
+            : 'Estimasi berat × harga acuan per kategori',
       icon: Banknote,
     },
   ]
 
   // Chamber Capacity Breakdown (5 Kompartemen)
   const chamberCapacity = [
-    { name: 'Kompartemen 1 — Baterai + Power Bank', percent: 68, color: 'oklch(0.72 0.18 152)' },
-    { name: 'Kompartemen 2 — Keyboard + Mouse', percent: 45, color: 'oklch(0.68 0.14 165)' },
-    { name: 'Kompartemen 3 — Kabel', percent: 54, color: 'oklch(0.70 0.16 160)' },
-    { name: 'Kompartemen 4 — Charger', percent: 38, color: 'oklch(0.74 0.15 145)' },
-    { name: 'Kompartemen 5 — PCB', percent: 82, color: 'oklch(0.75 0.18 80)' },
+    { name: 'Kompartemen 1 — Baterai + Power Bank', percent: 68 },
+    { name: 'Kompartemen 2 — Keyboard + Mouse', percent: 45 },
+    { name: 'Kompartemen 3 — Kabel', percent: 54 },
+    { name: 'Kompartemen 4 — Charger', percent: 38 },
+    { name: 'Kompartemen 5 — PCB', percent: 82 },
   ]
 
   // Recent AI & Sensor Detection Log
@@ -135,6 +189,47 @@ export default function AdminDashboardPage() {
         ))}
       </section>
 
+      <section className="valuation-panel panel-card" aria-labelledby="valuation-heading">
+        <div className="valuation-header">
+          <div>
+            <h2 id="valuation-heading" className="panel-title font-semibold text-[24px]">Estimasi nilai e-waste</h2>
+            <p className="valuation-description">Nilai dihitung dari berat tiap kategori dikalikan harga acuan per kilogram.</p>
+          </div>
+          <Link href="/admin/harga" className="valuation-manage-link">
+            Kelola harga <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+        <div className="valuation-table-wrap">
+          <table className="valuation-table">
+            <thead>
+              <tr>
+                <th scope="col">Kategori</th>
+                <th scope="col">Berat tercatat</th>
+                <th scope="col">Harga acuan / kg</th>
+                <th scope="col">Estimasi nilai</th>
+              </tr>
+            </thead>
+            <tbody>
+              {valuation.categoryValues.map((category) => (
+                <tr key={category.id}>
+                  <th scope="row">{category.name}</th>
+                  <td>{category.weightKg.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg</td>
+                  <td>{category.pricePerKg == null ? 'Belum diatur' : formatRupiah(category.pricePerKg)}</td>
+                  <td>{category.subtotal == null ? '—' : formatRupiah(category.subtotal)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colSpan="3">Total estimasi {valuation.missingCount > 0 && valuation.configuredCount > 0 ? '(parsial)' : ''}</th>
+                <td>{valuation.configuredCount === 0 ? 'Belum tersedia' : formatRupiah(valuation.total)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <p className="valuation-footnote">Berat yang tampil saat ini masih memakai data contoh kompartemen. Estimasi otomatis dihitung ulang setelah harga acuan disimpan.</p>
+      </section>
+
       {/* Main Spacious Grid: Chamber Capacity & AI Detection Logs */}
       <section className="telemetry-row gap-6" aria-label="Visual Telemetri Kompartemen dan Deteksi">
         {/* Panel 1: Kapasitas Kompartemen */}
@@ -163,16 +258,18 @@ export default function AdminDashboardPage() {
                   cy="60"
                   r="50"
                   fill="none"
-                  stroke="var(--color-primary)"
+                  stroke={overallCapacityColor}
                   strokeWidth="9"
                   strokeLinecap="round"
                   strokeDasharray="314.16"
-                  strokeDashoffset={314.16 * (1 - 0.74)}
+                  strokeDashoffset={314.16 * (1 - overallCapacityPercent / 100)}
                   transform="rotate(-90 60 60)"
                 />
               </svg>
               <div className="capacity-circle-text">
-                <span className="capacity-percent font-bold text-[32px]">74%</span>
+                <span className="capacity-percent font-bold text-[32px]" style={{ color: overallCapacityColor }}>
+                  {overallCapacityPercent}%
+                </span>
                 <span className="capacity-caption font-medium text-[13px]">Terisi</span>
               </div>
             </div>
@@ -188,7 +285,12 @@ export default function AdminDashboardPage() {
           {/* Highlight Callout: Kompartemen Paling Penuh */}
           <div className="highest-chamber-callout">
             <div className="highest-callout-left">
-              <AlertTriangle size={20} className="highest-callout-icon" aria-hidden="true" />
+              <AlertTriangle
+                size={20}
+                className="highest-callout-icon"
+                style={{ color: getCapacityColor(82) }}
+                aria-hidden="true"
+              />
               <div>
                 <div className="highest-callout-title">
                   Paling Banyak Terisi: Kompartemen 5 (PCB)
@@ -198,7 +300,10 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </div>
-            <span className="highest-callout-badge">
+            <span
+              className="highest-callout-badge"
+              style={{ backgroundColor: getCapacityColor(82), color: '#fff' }}
+            >
               82% Tertinggi
             </span>
           </div>
@@ -230,17 +335,20 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Vertical Bars */}
-              {chamberCapacity.map((c, idx) => {
+              {chamberCapacity.map((c) => {
+                const capacityColor = getCapacityColor(c.percent)
                 const isMax = c.percent === 82 // Kompartemen 5 PCB
                 return (
                   <div key={c.name} className={`barchart-col ${isMax ? 'is-max' : ''}`}>
-                    <span className="barchart-val-tag">{c.percent}%</span>
-                    <div className="barchart-track">
+                    <span className="barchart-val-tag" style={{ color: capacityColor }}>
+                      {c.percent}%
+                    </span>
+                    <div className="barchart-track" style={{ borderColor: capacityColor }}>
                       <div
                         className="barchart-fill"
                         style={{
                           height: `${c.percent}%`,
-                          backgroundColor: isMax ? 'var(--color-accent)' : 'var(--color-primary)',
+                          backgroundColor: capacityColor,
                         }}
                       />
                     </div>
@@ -252,12 +360,15 @@ export default function AdminDashboardPage() {
             {/* X-Axis Labels */}
             <div className="barchart-label-row">
               {chamberCapacity.map((c, idx) => {
+                const capacityColor = getCapacityColor(c.percent)
                 const isMax = c.percent === 82
                 const shortNames = ['Baterai', 'Keyboard', 'Kabel', 'Charger', 'PCB']
                 return (
                   <div key={c.name} className={`barchart-label-item ${isMax ? 'is-max' : ''}`}>
-                    <span className="barchart-col-title">Komp {idx + 1}</span>
-                    <span className="barchart-col-sub">{shortNames[idx]}</span>
+                    <span className="barchart-col-title" style={{ color: capacityColor }}>
+                      {shortNames[idx]}
+                    </span>
+                    <span className="barchart-col-sub">Komp {idx + 1}</span>
                   </div>
                 )
               })}
@@ -270,14 +381,16 @@ export default function AdminDashboardPage() {
               <div key={chamber.name} className="chamber-bar-item">
                 <div className="chamber-bar-labels font-medium text-[14px]">
                   <span className="chamber-name">{chamber.name}</span>
-                  <span className="chamber-val">{chamber.percent}%</span>
+                  <span className="chamber-val" style={{ color: getCapacityColor(chamber.percent) }}>
+                    {chamber.percent}%
+                  </span>
                 </div>
                 <div className="chamber-progress-track">
                   <div
                     className="chamber-progress-fill"
                     style={{
                       width: `${chamber.percent}%`,
-                      backgroundColor: chamber.percent === 82 ? 'var(--color-accent)' : chamber.color,
+                      backgroundColor: getCapacityColor(chamber.percent),
                     }}
                   />
                 </div>
